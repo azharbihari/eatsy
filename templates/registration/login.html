@@ -1,0 +1,73 @@
+{% extends "no_sidebar_base.html" %}
+
+{% block content %}
+<div class="card mx-auto" style="width: 460px;">
+    <div class="card-body">
+        <h1 class="display-6 mb-4">Login</h1>
+
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            <ul class="list-unstyled">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if next %}
+        {% if user.is_authenticated %}
+        <div class="alert alert-warning">
+            Your account doesn't have access to this page. To proceed,
+            please login with an account that has access.
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Please login to see this page.
+        </div>
+        {% endif %}
+        {% endif %}
+
+
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="hidden" name="next" value="">
+            <div class="form-floating mb-3">
+                <input type="text" value="{{ form.username.value|default_if_none:'' }}"
+                    class="form-control {% if form.username.errors %} is-invalid {% endif %}" id="id_username"
+                    name="username" placeholder="name@example.com">
+                <label for="id_username">Username</label>
+                {% if form.username.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" name="password" value="{{ form.password.value|default_if_none:'' }}"
+                    class="form-control {% if form.password.errors %} is-invalid {% endif %}" id="id_password"
+                    placeholder="Password">
+                <label for="id_password">Password</label>
+                {% if form.password.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="hstack gap-4">
+                <button type="submit" value="Log In" class="btn btn-primary">Log In</button>
+                <a href="{% url 'password_reset' %}" class="link-primary text-decoration-none">Lost
+                    Password?</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

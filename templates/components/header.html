@@ -1,0 +1,62 @@
+<header>
+    <nav class="container navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvasLg"
+                aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+
+            <a class="navbar-brand ms-2 ms-sm-0" aria-current="page" to="/">EATSY</a>
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="navbarOffcanvasLg"
+                aria-labelledby="navbarOffcanvasLgLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">EATSY</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">Restaurants</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="dropdown ms-auto">
+                <a href="#" data-bs-toggle="dropdown" aria-expanded="false"
+                    class="text-decoration-none dropdown-toggle badge d-flex align-items-center p-1 pe-2 text-warning-emphasis bg-success-subtle border border-warning-subtle rounded-pill">
+                    <img src="{{ user.avatar.url }}" alt="" width="24" height="24" class="rounded-circle me-1">
+                    {{ user.get_full_name|default:user.username }}
+                </a>
+
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" aria-current="page" href="{% url 'profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" aria-current="page" href="{% url 'password_change' %}">Change
+                            Password</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#"
+                            onclick="document.getElementById('logout-form').submit();">Logout</a></li>
+                    <form id="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                    </form>
+                </ul>
+            </div>
+            {% else %}
+            <div class="ms-auto">
+                <a class="btn btn-primary btn-sm me-1" href="{% url 'login' %}">Login</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'register' %}">Register
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+</header>
