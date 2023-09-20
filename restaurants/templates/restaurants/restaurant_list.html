@@ -1,0 +1,65 @@
+{% extends "no_sidebar_base.html" %}
+
+
+
+{% block head %}
+<h1 class="display-6 my-5"> Best Food in Mumbai</h1>
+{% endblock %}
+
+{% block content %}
+<style>
+    .card {
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+
+<div class="row row-cols-1 row-cols-md-5 g-3">
+    {% for restaurant in page_obj %}
+    <div class="col">
+        <a href="{% url 'restaurant-detail' slug=restaurant.slug %}" class="text-decoration-none">
+            <div class="card rounded-2">
+                <img src="{{ restaurant.image.url }}" class="card-img-top" alt="Restaurant Image">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">{{ restaurant.name }}</h5>
+                        <span class="badge text-bg-success">4.2 <i class="bi bi-star-fill"></i></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="text-muted">{{ restaurant.address }}</p>
+                        <p class="text-muted">₹150 for two</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% empty %}
+    <p>Sorry, no posts found.</p>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation example" class="mt-5">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+
+{% block sidebar %}
+{% endblock %}

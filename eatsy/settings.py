@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from django.contrib.messages import constants as messages
 from pathlib import Path
 import os
 
@@ -32,13 +33,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts'
+    'accounts',
+    'restaurants',
+    'carts',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -69,8 +74,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'eatsy.wsgi.application'
-
+# WSGI_APPLICATION = 'eatsy.wsgi.application'
+ASGI_APPLICATION = 'eatsy.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -137,3 +150,8 @@ EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_PORT = 2525
 EMAIL_HOST_USER = 'c0a67340b65af1'
 EMAIL_HOST_PASSWORD = 'f37b3276a70f2c'
+
+
+MESSAGE_TAGS = {
+    messages.ERROR: "danger"
+}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+<nav aria-label="breadcrumb" class="my-2">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'restaurant-list' %}">Restaurants</a></li>
+        <li class="breadcrumb-item">{{ restaurant.name }}</li>
+    </ol>
+</nav>
+
+
+<div class="row g-2">
+    <div class="col-5">
+        <h1 class="display-4">{{ object.name }}</h1>
+
+        {% if object.is_open %}
+        <p class="text-success fw-bold">Open Now</p>
+        {% endif %}
+
+        <p class="text-muted"><i class="bi bi-telephone-fill"></i> {{ object.contact_number }}</p>
+        <p class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ object.address }}</p>
+    </div>
+    <div class="col">
+        <img src="\media\restaurant_images\63f33764658fce51b5cf4b5686610a38.avif" class="img-fluid rounded" alt="...">
+    </div>
+</div>
+
+
+<ul class="nav nav-underline my-2">
+    <li class="nav-item">
+        <a class="nav-link active">Menu</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">Reviews</a>
+    </li>
+</ul>
+
+
+
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="row row-cols-1 g-2">
+            {% for menu in object.menu_set.all %}
+            <div class="col">
+                <div class="card">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-auto">
+                            <img src="{{ menu.image.url }}" class="img-fluid rounded-start">
+                        </div>
+                        <div class="col">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ menu.name }}</h5>
+                                <p class="card-text my-0">₹{{ menu.price }}</p>
+                                <p class="card-text my-0">
+                                    <small class="text-body-secondary">{{ menu.description}}</small>
+                                </p>
+                                <p class="card-text">
+                                    <small class="badge text-bg-secondary">{{ menu.category.name}}
+                                    </small>
+                                </p>
+
+                                <form method="POST" action="{% url 'add-to-cart' menu.pk %}?next={{ request.path }}">
+                                    {% csrf_token %}
+                                    <div class="input-group w-25">
+                                        <input type="number" name="quantity" value="1" min="1"
+                                            class="form-control form-control-sm" aria-describedby="submit">
+
+                                        <button type="submit" id="submit"
+                                            class="input-group-text btn btn-sm btn-primary">Add to
+                                            Cart</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>Sorry, no menus found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        {% if user.is_authenticated %}
+        <h2 class="display-6">Your Cart</h2>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="row row-cols-1 g-2">
+            {% for cart_item in cart_items %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <p>{{ cart_item.quantity }} x {{ cart_item.menu.name }}</p>
+                            <p>₹{{ cart_item.menu.price }}</p>
+                        </div>
+                        <a href="{% url 'remove-from-cart' cart_item.pk %}?next={{ request.path }}">Remove</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">Your cart is empty.</p>
+            {% endfor %}
+            <hr>
+            {% if cart_items %}
+            <div class="">
+                <div class="d-flex justify-content-between">
+                    <p class="fs-5 fw-bold">Total Amount</p>
+                    <p class="fs-5 fw-bold">₹{{total_amount}}</p>
+                </div>
+
+
+                <form method="POST" action="{% url 'place-order' object.slug %}">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" id="submit" class="btn btn-warning btn-lg">Place Order</button>
+                    </div>
+                </form>
+
+            </div>
+            {% endif %}
+        </div>
+
+        {% else %}
+
+        <p>Please <a href="{% url 'login' %}">log in</a> to view your cart.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

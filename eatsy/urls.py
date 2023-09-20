@@ -20,9 +20,11 @@ from eatsy.views import HomePageView
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('', HomePageView.as_view(), name="home"),
+    path('restaurants/', include('restaurants.urls')),
+    path('carts/', include("carts.urls")),
+    path('orders/', include("orders.urls")),
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("accounts/", include("django.contrib.auth.urls")),

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+<nav aria-label="breadcrumb" class="my-2">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'order-list' %}">My Order</a></li>
+        <li class="breadcrumb-item">{{ object }}</li>
+    </ol>
+</nav>
+
+{% if object.status != 'delivered' and object.status != 'cancelled' %}
+<div class="py-5">
+    <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0"
+        aria-valuemax="100" style="height: 24px">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" id="orderStatus" style="width: 25%"></div>
+    </div>
+</div>
+<script>
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/orders/{{object.pk}}/status/');
+
+    socket.onopen = (event) => {
+        console.log('WebSocket connection opened:', event);
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const orderStatus = data.status;
+        document.getElementById('orderStatus').innerText = orderStatus;
+        const progressBar = document.getElementById('orderStatus');
+
+
+        switch (orderStatus) {
+            case 'Pending':
+                progressBar.style.width = '25%';
+                break;
+            case 'Confirmed':
+                progressBar.style.width = '50%';
+                break;
+            case 'Preparing':
+                progressBar.style.width = '75%';
+                break;
+            case 'Out for Delivery':
+                progressBar.style.width = '90%';
+                break;
+            case 'Delivered':
+                progressBar.style.width = '100%';
+                break;
+            case 'Cancelled':
+                progressBar.style.width = '0%';
+                break;
+            default:
+                progressBar.style.width = '0%';
+        }
+    };
+
+    socket.onclose = (event) => {
+        console.log('WebSocket connection closed:', event);
+    };
+</script>
+
+{% endif %}
+
+
+
+
+
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <h3 class="text-body-secondary">Restaurant</h3>
+        <p class="display-4">{{ object.restaurant.name }} </p>
+        <div class="d-flex gap-2">
+            <p class="text-muted"><i class="bi bi-telephone-fill"></i> {{ object.restaurant.contact_number }}</p>
+            <p class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ object.restaurant.address }}</p>
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+        <h3 class="text-body-secondary">Order Detail</h3>
+        <p>Created on {{ object.created_at }}</p>
+        <p>
+            {% if object.status == 'delivered' %}
+            <span class="badge bg-success">{{ object.get_status_display }}</span>
+            {% elif object.status == 'cancelled' %}
+            <span class="badge bg-danger">{{ object.get_status_display }}</span>
+            {% endif %}
+        </p>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in object.orderitem_set.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ order_item.menu.name }}</td>
+                        <td>{{ order_item.quantity }}</td>
+                        <td>₹{{ order_item.menu.price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">Total Amount</h4>
+            <p class="mb-0 display-4"><strong>₹{{ object.total_amount }}</strong></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

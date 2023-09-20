@@ -22,7 +22,7 @@
                             <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="">Restaurants</a>
+                            <a class="nav-link" href="{% url 'restaurant-list' %}">Restaurants</a>
                         </li>
                     </ul>
                 </div>
@@ -38,6 +38,7 @@
 
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" aria-current="page" href="{% url 'profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" aria-current="page" href="{% url 'order-list' %}">My Orders</a></li>
                     <li><a class="dropdown-item" aria-current="page" href="{% url 'password_change' %}">Change
                             Password</a></li>
                     <li>
